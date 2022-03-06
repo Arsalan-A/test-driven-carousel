@@ -1,22 +1,37 @@
-import react from 'react';
 import React from 'react';
+import PropTypes from 'prop-types';
 import CarouselButton from './CarouselButton';
+import CarouselSlide from './CarouselSlide';
 
-export class Carousel extends React.PureComponent {
+class Carousel extends React.PureComponent {
+  static propTypes = {
+    slides: PropTypes.arrayOf(PropTypes.shape(CarouselSlide.propTypes))
+      .isRequired,
+  };
+
   state = {
     slideIndex: 0,
   };
 
   handlePrevClick = () => {
-    this.setState(({ slideIndex }) => ({ slideIndex: slideIndex - 1 }));
+    const { slides } = this.props;
+    this.setState(({ slideIndex }) => ({
+      slideIndex: (slideIndex + slides.length - 1) % slides.length, // 1
+    }));
   };
 
   handleNextClick = () => {
-    this.setState(({ slideIndex }) => ({ slideIndex: slideIndex + 1 }));
+    const { slides } = this.props;
+    this.setState(({ slideIndex }) => ({
+      slideIndex: (slideIndex + 1) % slides.length,
+    }));
   };
+
   render() {
+    const { slides, ...rest } = this.props;
     return (
-      <div>
+      <div {...rest}>
+        <CarouselSlide {...slides[this.state.slideIndex]} /* 1 */ />
         <CarouselButton data-action='prev' onClick={this.handlePrevClick}>
           Prev
         </CarouselButton>
